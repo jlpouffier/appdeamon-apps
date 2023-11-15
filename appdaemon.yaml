@@ -1,0 +1,30 @@
+secrets: /homeassistant/secrets.yaml
+
+appdaemon:
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
+  time_zone: Europe/Paris
+  app_dir: /config/apps
+  plugins:
+    HASS:
+      type: hass
+
+logs:
+  main_log:
+    filename: /config/logs/appdaemon.log
+  access_log:
+    filename: /config/logs/access.log
+  error_log:
+    filename: /config/logs/error.log
+  diag_log:
+    filename: /config/logs/diag.log
+  notifier:
+    name: notifier
+    filename: /config/logs/notifier.log
+  tesla_automations:
+    name: tesla_automations
+    filename: /config/logs/tesla_automations.log
+  matrix_2d:
+    name: matrix_2d
+    filename: /config/logs/matrix_2d.log
