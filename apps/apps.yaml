@@ -13,6 +13,9 @@ notifier:
       id: person.valentine
       notification_service: notify/mobile_app_iphone_de_valentine
       distance_sensor: sensor.distance_valentine_home
+  always_home_devices:
+    - name: JLo's iPad
+      notification_service: notify/mobile_app_jlo_ipad
 
 tesla_automations:
   module: tesla_automations

@@ -32,6 +32,8 @@ notifier:
       id: person.valentine
       notification_service: notify/mobile_app_pixel_4a
       distance_sensor: sensor.distance_valentine_home
+  always_home_devices:
+    - notification_service: notify/mobile_app_jlo_ipad
 
 The complete app can be called from anywhere by sending a custom event NOTIFIER with the following schema:
 
@@ -62,15 +64,16 @@ until:
 Here are detailed explanations for each field: (fields with a star * are mandatory)
 
 action can be the following:
-- send_to_<person_name>: Send a notification directly to the person called <person_name>
-- send_to_all: Send to all 
-- send_to_present: Send a notification directly to all present occupants of the home
+- send_to_<person_name>: Send a notification directly to the person called <person_name> (Does not send the notification to always home devices)
+- send_to_all: Send to all (including always home devices)
+- send_to_present: Send a notification directly to all present occupants of the home (including always home devices)
 - send_to_absent:  Send a notification directly to all absent occupants of the home
 - send_to_nearest: Send a notification to the nearest occupant(s) of the home
 - send_when_present:
    - if the home is occupied: Send a notification directly to all present occupant of the home
    - if the home is empty: Stage the notification and send it once the home becomes occupied
- 
+   - In both cases, send the notification right away to always home devices
+
 *title: Title of the notification
  
 *message: Body of the notification
@@ -194,6 +197,9 @@ class notifier(hass.Hass):
         notification_data["tag"] = tag
         for person in self.args["persons"]:
             self.call_service(person["notification_service"], message = "clear_notification", data = notification_data)
+        if "always_home_devices" in self.args:
+            for device in self.args["always_home_devices"]:
+                self.call_service(device["notification_service"], message = "clear_notification", data = notification_data)
         self.call_service("persistent_notification/dismiss", notification_id = tag)
         self.cancel_watchers(tag)
 
@@ -244,14 +250,23 @@ class notifier(hass.Hass):
         notification_data = self.build_notification_data(data)
         self.call_service(person["notification_service"], title = data["title"], message = data["message"], data = notification_data)
 
+    def send_to_always_home_devices(self, data):
+        if "always_home_devices" in self.args:
+            for device in self.args["always_home_devices"]:
+                self.log("Sending notification to " + device["name"])
+                notification_data = self.build_notification_data(data)
+                self.call_service(device["notification_service"], title = data["title"], message = data["message"], data = notification_data)
+
     def send_to_all(self, data):
         for person in self.args["persons"]:
             self.send_to_person(data, person)
+        self.send_to_always_home_devices(data)
 
     def send_to_present(self, data):
         for person in self.args["persons"]:
             if self.get_state(person["id"]) == "home" or float(self.get_state(person["distance_sensor"])) <= self.args["proximity_threshold"]:
                 self.send_to_person(data, person)
+        self.send_to_always_home_devices(data)
                 
     def send_to_absent(self, data):
         for person in self.args["persons"]:
@@ -276,6 +291,7 @@ class notifier(hass.Hass):
         else:
             self.log("Staging notification for when home becomes occupied ...")
             self.staged_notifications.append(data)
+            self.send_to_always_home_devices(data)
     
     def callback_home_occupied(self, entity, attribute, old, new, kwargs):
         if len(self.staged_notifications) >= 1:
