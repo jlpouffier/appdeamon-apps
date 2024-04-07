@@ -9,10 +9,6 @@ notifier:
       id: person.jenova70
       notification_service: notify/mobile_app_jean_loics_iphone
       distance_sensor: sensor.distance_jl_home
-    - name: valentine
-      id: person.valentine
-      notification_service: notify/mobile_app_iphone_de_valentine
-      distance_sensor: sensor.distance_valentine_home
   always_home_devices:
     - name: JLo's iPad
       notification_service: notify/mobile_app_jlo_ipad

@@ -25,13 +25,13 @@ notifier:
   proximity_threshold: 1000
   persons:
     - name: jl
-      id: person.jenova70
-      notification_service: notify/mobile_app_pixel_6
-      distance_sensor: sensor.distance_jl_home
-    - name: valentine
-      id: person.valentine
-      notification_service: notify/mobile_app_pixel_4a
-      distance_sensor: sensor.distance_valentine_home
+      id: person.bob
+      notification_service: notify/mobile_app_bob_phone
+      distance_sensor: sensor.distance_bob_home
+    - name: alice
+      id: person.alice
+      notification_service: notify/mobile_app_alice_phone
+      distance_sensor: sensor.distance_alice_home
   always_home_devices:
     - notification_service: notify/mobile_app_jlo_ipad
 
