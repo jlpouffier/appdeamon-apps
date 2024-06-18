@@ -13,12 +13,6 @@ notifier:
     - name: JLo's iPad
       notification_service: notify/mobile_app_jlo_ipad
 
-tesla_automations:
-  module: tesla_automations
-  class: tesla_automations
-  log: tesla_automations
-  max_delay_between_coordinate_update_to_send_location_update: 1
-
 matrix_2d:
   module: matrix_2d
   class: matrix_2d
