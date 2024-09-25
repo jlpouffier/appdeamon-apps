@@ -7,7 +7,10 @@ Notify is an app responsible for notifying the right occupant(s) at the right ti
  
 Here is the list of parameter that you NEED to set in order to run the app:
 
-home_occupancy_sensor_id: the id of a binary sensor that will be true if someone is at home, and false otherwise
+home_occupancy_sensor: The definition of the sensor used to know if your house is occupied or not. This sensor can be a binary sensor, an input_select, whatever you want.
+    id: Its ID
+    occupied_state: The state of the sensor when the house is occupied
+    empty_state: The state of the sensor when the house is empty.
 proximity_threshold: A thresold in meter, bellow this threshold the app will concider the person at home. This is to avoid pinging only the first one that reaches Home if both occupant are on the same car for exmaple (Both will be pinged)
 persons: A list of person, including
     name: their name
@@ -21,7 +24,10 @@ Here is an exmaple on how to instantiate the app:
 notifier:
   module: notifier
   class: notifier
-  home_occupancy_sensor_id: binary_sensor.home_occupied
+  home_occupancy_sensor:
+    id: input_select.mode_de_presence_de_la_maison
+    occupied_state: "Occupée"
+    empty_state: "Vide"
   proximity_threshold: 1000
   persons:
     - name: jl
@@ -117,8 +123,8 @@ until dynamically creates watcher(s) to clear notification.
 I prefer to explain it with an example:
 If you want to notify all occupants that the lights are still on while the home is empty, you can specify
 until:
- - entity_id: binary_sensor.home_occupied
-   new_state : on
+ - entity_id: input_select.home_mode
+   new_state : Occupied
  - entity_id: light.all_lights
    new_state : off
 This will make the notification(s) disappear as soon as the lights are off, or the home becomes occupied.
@@ -135,7 +141,10 @@ class notifier(hass.Hass):
         
         # Staged notification 
         self.staged_notifications = []
-        self.listen_state(self.callback_home_occupied , self.args["home_occupancy_sensor_id"] , old = "off" , new = "on")
+        self.listen_state(  self.callback_home_occupied , 
+                            self.args["home_occupancy_sensor"]["id"] , 
+                            old = self.args["home_occupancy_sensor"]["empty_state"] , 
+                            new = self.args["home_occupancy_sensor"]["occupied_state"])
 
         # Temporary watchers
         self.watchers_handles = []
@@ -286,7 +295,7 @@ class notifier(hass.Hass):
                 self.send_to_person(data, person)
     
     def send_when_present(self, data):
-        if self.get_state(self.args["home_occupancy_sensor_id"]) == "on":
+        if self.get_state(self.args["home_occupancy_sensor"]["id"]) == self.args["home_occupancy_sensor"]["occupied_state"]:
             self.send_to_present(data)
         else:
             self.log("Staging notification for when home becomes occupied ...")

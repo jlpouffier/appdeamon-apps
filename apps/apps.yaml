@@ -2,7 +2,10 @@ notifier:
   module: notifier
   class: notifier
   log: notifier
-  home_occupancy_sensor_id: binary_sensor.home_occupied
+  home_occupancy_sensor:
+    id: input_select.mode_de_presence_de_la_maison
+    occupied_state: "Occupée"
+    empty_state: "Vide"
   proximity_threshold: 1000
   persons:
     - name: jl
