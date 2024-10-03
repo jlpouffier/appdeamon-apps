@@ -10,7 +10,6 @@ Here is the list of parameter that you NEED to set in order to run the app:
 home_occupancy_sensor: The definition of the sensor used to know if your house is occupied or not. This sensor can be a binary sensor, an input_select, whatever you want.
     id: Its ID
     occupied_state: The state of the sensor when the house is occupied
-    empty_state: The state of the sensor when the house is empty.
 proximity_threshold: A thresold in meter, bellow this threshold the app will concider the person at home. This is to avoid pinging only the first one that reaches Home if both occupant are on the same car for exmaple (Both will be pinged)
 persons: A list of person, including
     name: their name
@@ -25,9 +24,8 @@ notifier:
   module: notifier
   class: notifier
   home_occupancy_sensor:
-    id: input_select.mode_de_presence_de_la_maison
+    id: input_select.modes_de_presence_de_la_maison_v2
     occupied_state: "Occupée"
-    empty_state: "Vide"
   proximity_threshold: 1000
   persons:
     - name: jl
@@ -143,7 +141,6 @@ class notifier(hass.Hass):
         self.staged_notifications = []
         self.listen_state(  self.callback_home_occupied , 
                             self.args["home_occupancy_sensor"]["id"] , 
-                            old = self.args["home_occupancy_sensor"]["empty_state"] , 
                             new = self.args["home_occupancy_sensor"]["occupied_state"])
 
         # Temporary watchers

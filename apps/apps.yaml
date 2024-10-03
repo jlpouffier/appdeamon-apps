@@ -3,9 +3,8 @@ notifier:
   class: notifier
   log: notifier
   home_occupancy_sensor:
-    id: input_select.mode_de_presence_de_la_maison
-    occupied_state: "Occupée"
-    empty_state: "Vide"
+    id: input_select.modes_de_presence_de_la_maison_v2
+    occupied_state: "Arrivée en cours"
   proximity_threshold: 1000
   persons:
     - name: jl
